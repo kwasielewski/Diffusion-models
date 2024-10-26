@@ -1,0 +1,7 @@
+Filename, link, license
+
+DDPM-structure.png
+https://www.researchgate.net/figure/Network-structure-of-DALL-E-2-5_fig3_378537767
+CC BY 3.0
+
+

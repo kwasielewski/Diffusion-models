@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.3
+# v0.20.1
 
 using Markdown
 using InteractiveUtils
@@ -12,14 +12,19 @@ begin
 	Images.load("./Images/wurstchen_example.png")
 end
 
+# ╔═╡ 8ed4229f-9f93-42c8-a98b-e2ca308ddb59
+begin
+	#startup code
+end
+
 # ╔═╡ 7714b397-d308-472a-a921-f15fa6853cff
 md"""
 # Denoising diffusion probabilistic models
 """
 
 # ╔═╡ f11f7203-b17c-460b-b858-48575dc98ad4
-md"Today we will present article named *'Denoising Diffusion Probabilistic Models'*, published in 2020 by scientists from UC Berkeley, and two more which improve the idea of generating pictures using diffusion models. \
-##Below we can see what newest models can achive."
+md"""Today we will present article named *'Denoising Diffusion Probabilistic Models'*, published in 2020 by scientists from UC Berkeley, and two more which improve the idea of generating pictures using diffusion models. \
+Below we can see what newest models can achive."""
 
 # ╔═╡ 727eb3c8-f831-4a99-8ba1-5ddbb8789a43
 md"# Diffusion processes"
@@ -79,19 +84,56 @@ md"# Demonstration"
 md"# Image sampling"
 
 # ╔═╡ 4088f00d-416f-4504-ab79-7c450a2b60a0
-md"# Cosine-Beta scheduling"
+begin
+linear = Images.load("./Images/linear.png")
+cosine = Images.load("./Images/cosine-beta.png")
+md"""# Cosine-Beta scheduling
+Let's focus once again on the noising process. This is how it looks like using the parametrization proposed by original DDPM paper:
+$linear
+Loss of the origal image is almost immediate.
+"""
+end
 
-# ╔═╡ 6ad820c3-67b2-4ba8-885e-2a8e885be436
-md"# DDPMs vs hierarchical VAEs"
+# ╔═╡ 29d1344f-3f0f-486d-b393-8f23be1309df
+md"""
+# Cosine-Beta scheduling
+Schedule proposed by Improved DDPMs paper (citation needed) applies cosine function to prolong critical parts of noising process using the modified formula:
+
+$$f(t)=cos(π)$$
+and here is the comparison
+
+$cosine
+
+$linear
+"""
 
 # ╔═╡ 7ff1a724-6d8a-473c-8bb0-b440b6a70bcd
-md"# Latent difussion models"
+begin
+ldm = Images.load("./Images/ldm.png")
+md"""# Latent difussion models
+Until this part of presentation discussed models operated directly on pixel space.
+Paper <name> showed that it is possible to move the diffusion process to the latent space.
+$ldm
+We will dissect crucial parts of the architecture that enable the latent space computation
+"""
+end
 
 # ╔═╡ dc2335cc-99e5-4096-8d58-a320caac7936
-md"# Vector quantized GANs"
+begin
+vqgan = Images.load("./Images/vqgan.png")
+md"""# Vector quantized GANs
+Why is an additional type of GANs needed for LDMs?
+> Learning a latent space that is suitable for computation is tricky. That's why LDMs include VQGANs as part of the architecture
+$vqgan
+"""
+end
 
 # ╔═╡ ff792787-0d6d-4da4-a200-c2ccff22cf3c
-md"# Crossattention & conditioning"
+md"""# Crossattention & conditioning
+How is it possible to get the LDM to generate a specific kind of image?
+> Any kind of numeric data can be added to the reverse diffusion process via concatenation or crossattention (switch block). This data is used as a guide to the generation process.
+$ldm
+"""
 
 # ╔═╡ f60374b5-85ef-40a6-b38e-e9b441c231b1
 md"# Demonstration"
@@ -1277,6 +1319,7 @@ version = "17.4.0+2"
 """
 
 # ╔═╡ Cell order:
+# ╠═8ed4229f-9f93-42c8-a98b-e2ca308ddb59
 # ╟─7714b397-d308-472a-a921-f15fa6853cff
 # ╟─f11f7203-b17c-460b-b858-48575dc98ad4
 # ╠═1a77f641-8950-4afd-92aa-4647aea99d2e
@@ -1298,10 +1341,10 @@ version = "17.4.0+2"
 # ╠═5ecc0cf6-7fb0-4c3a-bc1c-71cb2feebce5
 # ╟─311ee76b-eb55-4ac8-b11e-e4aa4e7a535b
 # ╟─4088f00d-416f-4504-ab79-7c450a2b60a0
-# ╟─6ad820c3-67b2-4ba8-885e-2a8e885be436
-# ╟─7ff1a724-6d8a-473c-8bb0-b440b6a70bcd
-# ╟─dc2335cc-99e5-4096-8d58-a320caac7936
-# ╟─ff792787-0d6d-4da4-a200-c2ccff22cf3c
+# ╠═29d1344f-3f0f-486d-b393-8f23be1309df
+# ╠═7ff1a724-6d8a-473c-8bb0-b440b6a70bcd
+# ╠═dc2335cc-99e5-4096-8d58-a320caac7936
+# ╠═ff792787-0d6d-4da4-a200-c2ccff22cf3c
 # ╟─f60374b5-85ef-40a6-b38e-e9b441c231b1
 # ╟─7adc130d-f8e4-4dd5-b8c4-7ab3e91b932f
 # ╟─acbdff18-8cb3-4cca-83ab-5581db59346c

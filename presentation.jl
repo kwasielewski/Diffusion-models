@@ -1,13 +1,15 @@
 ### A Pluto.jl notebook ###
-# v0.20.1
+# v0.20.3
 
 using Markdown
 using InteractiveUtils
 
-# ╔═╡ 94450618-79f8-4b43-9e39-b33940577c1e
+# ╔═╡ 1a77f641-8950-4afd-92aa-4647aea99d2e
 begin
 	using Images
-	Images.load("./Images/DDPM-structure.png")
+	Images.load("./Images/sd_example.jpg")
+
+	Images.load("./Images/wurstchen_example.png")
 end
 
 # ╔═╡ 7714b397-d308-472a-a921-f15fa6853cff
@@ -15,17 +17,51 @@ md"""
 # Denoising diffusion probabilistic models
 """
 
+# ╔═╡ f11f7203-b17c-460b-b858-48575dc98ad4
+md"Today we will present article named *'Denoising Diffusion Probabilistic Models'*, published in 2020 by scientists from UC Berkeley, and two more which improve the idea of generating pictures using diffusion models. \
+##Below we can see what newest models can achive."
+
 # ╔═╡ 727eb3c8-f831-4a99-8ba1-5ddbb8789a43
 md"# Diffusion processes"
 
+# ╔═╡ 6ca59299-152f-445f-a50f-370cb230fb50
+md"All models we will talk today are using diffusion proces. Diffusion models were introduced in 2015 [1] as a method to learn a model that can sample from a highly complex probability distribution. Later in DDPM paper diffusion is process of noising and denoising picture. We want to learn neural network to predict noise we add in specific time $t \in \set{0, 1000}$ to reverse noising process and get picture which represents something. (może coś dodać tu o p i q)"
+
+# ╔═╡ 45422b88-7474-4aeb-8f69-6abfa34e528f
+md"### Example"
+
 # ╔═╡ 0ab3b4a0-c328-49bb-b8e1-73728f89d96c
-# obrazek zaszumiania
+begin
+	Images.load("./Images/Markov-chain.png")
+end
+
+# ╔═╡ 4e09ea6c-358c-4104-8ab5-d7e74808af3d
+md"[1] Sohl-Dickstein, Jascha, et al. 'Deep unsupervised learning using nonequilibrium thermodynamics.' International conference on machine learning. PMLR, 2015."
 
 # ╔═╡ 0ea80eac-30bb-42d0-8981-3b252b248094
 md"# Architecture"
 
+# ╔═╡ c2142f87-445d-4ff2-993f-b3bcea81ac13
+md"This architecture is called U-Net, it was used in image segmentation but it also found its place in diffusion models for noise prediction. Diffusion models also added self-attention layers which aren't present in this picture but we will explain them in a minute and time embeddings which will condition our model based on 't'"
+
+# ╔═╡ 94450618-79f8-4b43-9e39-b33940577c1e
+begin
+	Images.load("./Images/DDPM-structure.png")
+end
+
 # ╔═╡ fced2cca-94c9-475d-b107-8711fc44a4ce
 md"# Self-attention"
+
+# ╔═╡ a593e359-6291-437c-9527-ae7066941f8f
+md"### What is self attention?"
+
+# ╔═╡ 02a410f0-db83-404d-857b-75db04c57dc2
+md"It's used to learn how every pixel coresponds to every other pixel in our picture and in every channel (RGB). "
+
+# ╔═╡ f6a9fca7-de96-491e-b83a-8de15faf11e0
+begin
+	Images.load("./Images/attention.png")
+end
 
 # ╔═╡ 08ccf4b4-8d9f-4735-84a7-c9684bf77a52
 md"# Markov chains"
@@ -35,6 +71,9 @@ md"# Formula derivation"
 
 # ╔═╡ 7f743687-8ea1-42f1-877d-95b323ec92cf
 md"# Demonstration"
+
+# ╔═╡ 5ecc0cf6-7fb0-4c3a-bc1c-71cb2feebce5
+
 
 # ╔═╡ 311ee76b-eb55-4ac8-b11e-e4aa4e7a535b
 md"# Image sampling"
@@ -1239,14 +1278,24 @@ version = "17.4.0+2"
 
 # ╔═╡ Cell order:
 # ╟─7714b397-d308-472a-a921-f15fa6853cff
+# ╟─f11f7203-b17c-460b-b858-48575dc98ad4
+# ╠═1a77f641-8950-4afd-92aa-4647aea99d2e
 # ╟─727eb3c8-f831-4a99-8ba1-5ddbb8789a43
-# ╠═0ab3b4a0-c328-49bb-b8e1-73728f89d96c
+# ╠═6ca59299-152f-445f-a50f-370cb230fb50
+# ╟─45422b88-7474-4aeb-8f69-6abfa34e528f
+# ╟─0ab3b4a0-c328-49bb-b8e1-73728f89d96c
+# ╟─4e09ea6c-358c-4104-8ab5-d7e74808af3d
 # ╟─0ea80eac-30bb-42d0-8981-3b252b248094
-# ╟─94450618-79f8-4b43-9e39-b33940577c1e
+# ╠═c2142f87-445d-4ff2-993f-b3bcea81ac13
+# ╠═94450618-79f8-4b43-9e39-b33940577c1e
 # ╟─fced2cca-94c9-475d-b107-8711fc44a4ce
+# ╠═a593e359-6291-437c-9527-ae7066941f8f
+# ╠═02a410f0-db83-404d-857b-75db04c57dc2
+# ╠═f6a9fca7-de96-491e-b83a-8de15faf11e0
 # ╟─08ccf4b4-8d9f-4735-84a7-c9684bf77a52
 # ╟─611f2dfb-c00a-4209-9828-cf754c6628f0
 # ╟─7f743687-8ea1-42f1-877d-95b323ec92cf
+# ╠═5ecc0cf6-7fb0-4c3a-bc1c-71cb2feebce5
 # ╟─311ee76b-eb55-4ac8-b11e-e4aa4e7a535b
 # ╟─4088f00d-416f-4504-ab79-7c450a2b60a0
 # ╟─6ad820c3-67b2-4ba8-885e-2a8e885be436

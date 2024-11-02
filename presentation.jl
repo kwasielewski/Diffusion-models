@@ -21,7 +21,7 @@ md"""
 """
 
 # ╔═╡ f11f7203-b17c-460b-b858-48575dc98ad4
-md"""Today we will present article named *'Denoising Diffusion Probabilistic Models'*, published in 2020 by scientists from UC Berkeley, and two more which improve the idea of generating pictures using diffusion models. \
+md"""Today we will present article named *'Denoising Diffusion Probabilistic Models'*[1], published in 2020 by scientists from UC Berkeley, and a few more which improve the idea of generating pictures using diffusion models. \
 Below we can see what newest models can achive."""
 
 # ╔═╡ 1a77f641-8950-4afd-92aa-4647aea99d2e
@@ -40,7 +40,7 @@ end
 md"# Diffusion processes"
 
 # ╔═╡ 6ca59299-152f-445f-a50f-370cb230fb50
-md"All models we will talk today are using diffusion proces. Diffusion models were introduced in 2015 [1] as a method to learn a model that can sample from a highly complex probability distribution. Later in DDPM paper diffusion is process of noising and denoising picture. We want to learn neural network to predict noise we add in specific time $t \in \set{0, 1000}$ to reverse noising process and get picture which represents something. (może coś dodać tu o p i q)"
+md"All models we will talk today are using diffusion proces. Diffusion models were introduced in 2015 [2] as a method to learn a model that can sample from a highly complex probability distribution. Later in DDPM paper diffusion is process of noising and denoising picture. We want to learn neural network to predict noise we add in specific time $t \in \set{0, 1000}$ to reverse noising process and get picture which represents something. (może coś dodać tu o p i q)"
 
 # ╔═╡ 45422b88-7474-4aeb-8f69-6abfa34e528f
 md"### Example"
@@ -50,8 +50,11 @@ begin
 	Images.load("./Images/Markov-chain.png")
 end
 
+# ╔═╡ 10d15769-818e-4b53-858e-8a34ffc813ff
+md"Diffusion process visualization in DDPM paper"
+
 # ╔═╡ 4e09ea6c-358c-4104-8ab5-d7e74808af3d
-md"[1] Sohl-Dickstein, Jascha, et al. 'Deep unsupervised learning using nonequilibrium thermodynamics.' International conference on machine learning. PMLR, 2015."
+md"[2] Sohl-Dickstein, Jascha, et al. 'Deep unsupervised learning using nonequilibrium thermodynamics.' International conference on machine learning. PMLR, 2015."
 
 # ╔═╡ e93aa232-d336-4308-97a5-46b754dde31e
 md"# Diffusion example"
@@ -96,11 +99,15 @@ end
 	plot(grayscale_imgs[i],  cbar = false, framestyle = :none)
 end
 
-# ╔═╡ d6a07f96-a47f-46eb-ab21-b1419b77af8a
-# ╠═╡ show_logs = false
+# ╔═╡ c13b2bd8-26fd-4986-9b07-d6e4e4d91a5b
 begin
 	pipeline = diffusers.DDPMPipeline
 	pipeline = pipeline.from_pretrained("1aurent/ddpm-mnist") #manually download model
+end
+
+# ╔═╡ d6a07f96-a47f-46eb-ab21-b1419b77af8a
+# ╠═╡ show_logs = false
+begin
 	image = pipeline()["images"][1]
 	image
 end
@@ -108,16 +115,52 @@ end
 # ╔═╡ 2c526545-0db6-488f-b258-4a3e229afd9d
 image.resize((256, 256))
 
+# ╔═╡ 63863c61-caca-4f82-a805-6d84ba6ac310
+md"""# Derivation of formulas for DDPMs
+### Concise noising
+$$\begin{align} q(x_t|x_{t-1}) & = \mathcal{N}(x_t, \sqrt{1-\beta_t}x_{t-1},\beta_t I) \\
+& =\sqrt{1-\beta_t}x_{t-1}+\sqrt{\beta}\epsilon \\
+& =\sqrt{\alpha}x_{t-1}+\sqrt{1-\alpha_t}\epsilon \\
+& =\sqrt{\bar{\alpha}_t x_0} + \sqrt{1-\bar{\alpha}_t }\epsilon \end{align}$$
+"""
+
+# ╔═╡ 3423aa63-a95a-43dc-9c5d-8fc07f30dfa4
+md"""# Derivation of formulas for DDPMs
+### Loss function
+$$\begin{align}-\log(p_\theta) & \leq -\log(p_\theta) + D_{KL}(q(x_{t-1}|x_t,x_0)||p_\theta(x_{t-1}|x_t))\\
+& = -\log(p_\theta) + \log{\frac{q(x_{1:T}|x_0)}{p_\theta(x_{1:T}|x_0)}} \\
+& = -\log(p_\theta) + \log{\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}} + \log(p_\theta) \\
+& =\log{\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}} \end{align}$$
+This form should be enough to compute the loss, but there are more simplifications to be made.
+"""
+
+# ╔═╡ 53808e68-6597-4207-8b5d-cffedd266da8
+md"""# Derivation of formulas for DDPMs
+### Loss function
+$$\begin{align}\log{\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}} & = -\log(p(x_T)) + \sum_{t=1}^{T}\log(\frac{q(x_t|x_{t-1})}{p_\theta(x_{t-1}|x_t)}) \\
+& = -\log(p(x_T)) + \sum_{t=2}^{T}\log(\frac{q(x_t|x_{t-1})}{p_\theta(x_{t-1}|x_t)}) + \log(\frac{q(x_1|x_{0})}{p_\theta(x_{0}|x_1)}) \\
+& = -\log(p(x_T)) + \sum_{t=2}^{T}\log(\frac{q(x_t|x_{t-1}, x_0)q(x_t|x_0)}{p_\theta(x_{t-1}|x_t)q(x_{t-1}|x_0)}) + \log(\frac{q(x_1|x_{0})}{p_\theta(x_{0}|x_1)}) \\
+& = \log(\frac{q(x_T|x_0)}{p(x_T)}) + \sum_{t=2}^{T}\log(\frac{q(x_{t-1}|x_t, x_0)}{p_\theta(x_{t-1}|x_t)}) - \log(p_\theta(x_0|x_1)) \\
+& = D_{KL}(q(x_T|x_0)||p(x_T)) + \sum_{t=2}^{T}D_{KL}(q(x_{t-1}|x_t, x_0)||p_\theta(x_{t-1}|x_t)) \\& \text{ }\text{ }\text{ }- \log(p_\theta(x_0|x_1))
+\end{align}$$
+First term does not have any learnable parameters, so it can be ommited from loss calculations. Dissecting second term would further reveal that the intuition for predicting noise only is correct. For more details see this [blogpost](https://lilianweng.github.io/posts/2021-07-11-diffusion-models/) by Lilian Weng.
+"""
+
 # ╔═╡ 0ea80eac-30bb-42d0-8981-3b252b248094
 md"# Architecture"
 
 # ╔═╡ c2142f87-445d-4ff2-993f-b3bcea81ac13
-md"This architecture is called U-Net, it was used in image segmentation but it also found its place in diffusion models for noise prediction. Diffusion models also added self-attention layers which aren't present in this picture but we will explain them in a minute and time embeddings which will condition our model based on 't'"
+md"This architecture is called U-Net[3], it was used in image segmentation but it also found its place in diffusion models for noise prediction. Diffusion models also added self-attention layers which aren't present in this picture but we will explain them in a minute and time embeddings which will condition our model based on 't'"
 
 # ╔═╡ 94450618-79f8-4b43-9e39-b33940577c1e
 begin
-	Images.load("./Images/DDPM-structure.png")
+	unet = Images.load("./Images/DDPM-structure.png")
+	md"$unet U-Net structure introduced in U-Net paper"
 end
+
+# ╔═╡ 5dc38e26-d688-448f-a636-79b9f691244d
+md"""[3] Olaf Ronneberger, Philipp Fischer, Thomas Brox 'U-Net: Convolutional Networks for Biomedical Image Segmentation', CoRR, 2015
+"""
 
 # ╔═╡ fced2cca-94c9-475d-b107-8711fc44a4ce
 md"# Self-attention"
@@ -131,13 +174,8 @@ md"It's used to learn how every pixel coresponds to every other pixel in our pic
 # ╔═╡ f6a9fca7-de96-491e-b83a-8de15faf11e0
 begin
 	Images.load("./Images/attention.png")
+	# Where it is from???
 end
-
-# ╔═╡ 08ccf4b4-8d9f-4735-84a7-c9684bf77a52
-md"# Markov chains"
-
-# ╔═╡ 611f2dfb-c00a-4209-9828-cf754c6628f0
-md"# Formula derivation"
 
 # ╔═╡ 0e829dba-f6a8-4220-9620-c8c553029bcf
 begin
@@ -155,6 +193,7 @@ begin
 	sampling = Images.load("./Images/sampling.png")
 	md"""# Image sampling
 	$sampling
+	
 	"""
 end
 
@@ -218,10 +257,20 @@ $ldm
 md"# Demonstration"
 
 # ╔═╡ 7adc130d-f8e4-4dd5-b8c4-7ab3e91b932f
-md"# Würstchen" 
+begin
+	wuerstchenarch = Images.load("./Images/wuerstchen-arch.png")
+md"""# Würstchen
+  	$wuerstchenarch
+""" 
+end
 
-# ╔═╡ acbdff18-8cb3-4cca-83ab-5581db59346c
-md"# Optimization"
+# ╔═╡ b6061139-23c9-4672-8820-8427869dca90
+begin
+wuerstchentrain = Images.load("./Images/wuerstchen-train.png")
+md"""# Würstchen training
+$wuerstchentrain
+"""
+end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -2090,28 +2139,32 @@ version = "1.4.1+1"
 # ╔═╡ Cell order:
 # ╠═8ed4229f-9f93-42c8-a98b-e2ca308ddb59
 # ╟─7714b397-d308-472a-a921-f15fa6853cff
-# ╟─f11f7203-b17c-460b-b858-48575dc98ad4
+# ╠═f11f7203-b17c-460b-b858-48575dc98ad4
 # ╠═1a77f641-8950-4afd-92aa-4647aea99d2e
 # ╟─727eb3c8-f831-4a99-8ba1-5ddbb8789a43
 # ╠═6ca59299-152f-445f-a50f-370cb230fb50
 # ╟─45422b88-7474-4aeb-8f69-6abfa34e528f
 # ╟─0ab3b4a0-c328-49bb-b8e1-73728f89d96c
-# ╟─4e09ea6c-358c-4104-8ab5-d7e74808af3d
+# ╟─10d15769-818e-4b53-858e-8a34ffc813ff
+# ╠═4e09ea6c-358c-4104-8ab5-d7e74808af3d
 # ╠═e93aa232-d336-4308-97a5-46b754dde31e
 # ╠═c5f6cacc-fc77-4064-b9ce-cbc6b27e20c2
 # ╠═8839bc7b-440e-4709-baae-d77bdd649cc5
 # ╠═c0961946-ba71-4466-be98-2fcef9f280b7
+# ╠═c13b2bd8-26fd-4986-9b07-d6e4e4d91a5b
 # ╠═d6a07f96-a47f-46eb-ab21-b1419b77af8a
 # ╠═2c526545-0db6-488f-b258-4a3e229afd9d
+# ╠═63863c61-caca-4f82-a805-6d84ba6ac310
+# ╠═3423aa63-a95a-43dc-9c5d-8fc07f30dfa4
+# ╠═53808e68-6597-4207-8b5d-cffedd266da8
 # ╟─0ea80eac-30bb-42d0-8981-3b252b248094
 # ╠═c2142f87-445d-4ff2-993f-b3bcea81ac13
 # ╠═94450618-79f8-4b43-9e39-b33940577c1e
+# ╠═5dc38e26-d688-448f-a636-79b9f691244d
 # ╟─fced2cca-94c9-475d-b107-8711fc44a4ce
 # ╠═a593e359-6291-437c-9527-ae7066941f8f
 # ╠═02a410f0-db83-404d-857b-75db04c57dc2
 # ╠═f6a9fca7-de96-491e-b83a-8de15faf11e0
-# ╟─08ccf4b4-8d9f-4735-84a7-c9684bf77a52
-# ╟─611f2dfb-c00a-4209-9828-cf754c6628f0
 # ╠═0e829dba-f6a8-4220-9620-c8c553029bcf
 # ╟─7f743687-8ea1-42f1-877d-95b323ec92cf
 # ╠═311ee76b-eb55-4ac8-b11e-e4aa4e7a535b
@@ -2122,7 +2175,7 @@ version = "1.4.1+1"
 # ╠═619c3b5e-01b4-433a-9720-df1d9cb75c35
 # ╠═ff792787-0d6d-4da4-a200-c2ccff22cf3c
 # ╟─f60374b5-85ef-40a6-b38e-e9b441c231b1
-# ╟─7adc130d-f8e4-4dd5-b8c4-7ab3e91b932f
-# ╟─acbdff18-8cb3-4cca-83ab-5581db59346c
+# ╠═7adc130d-f8e4-4dd5-b8c4-7ab3e91b932f
+# ╠═b6061139-23c9-4672-8820-8427869dca90
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

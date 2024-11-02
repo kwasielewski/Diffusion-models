@@ -11,7 +11,8 @@ begin
 	using Images
 	using PlutoUI
 	using Plots
-
+	using PyCall
+	diffusers = pyimport("diffusers")
 end
 
 # ╔═╡ 7714b397-d308-472a-a921-f15fa6853cff
@@ -94,6 +95,18 @@ end
 @gif for i in 1:T
 	plot(grayscale_imgs[i],  cbar = false, framestyle = :none)
 end
+
+# ╔═╡ d6a07f96-a47f-46eb-ab21-b1419b77af8a
+# ╠═╡ show_logs = false
+begin
+	pipeline = diffusers.DDPMPipeline
+	pipeline = pipeline.from_pretrained("1aurent/ddpm-mnist") #manually download model
+	image = pipeline()["images"][1]
+	image
+end
+
+# ╔═╡ 2c526545-0db6-488f-b258-4a3e229afd9d
+image.resize((256, 256))
 
 # ╔═╡ 0ea80eac-30bb-42d0-8981-3b252b248094
 md"# Architecture"
@@ -216,11 +229,13 @@ PLUTO_PROJECT_TOML_CONTENTS = """
 Images = "916415d5-f1e6-5110-898d-aaa5f9f070e0"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
+PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
 
 [compat]
 Images = "~0.26.1"
 Plots = "~1.40.7"
 PlutoUI = "~0.7.60"
+PyCall = "~1.96.4"
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000002
@@ -229,7 +244,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.11.1"
 manifest_format = "2.0"
-project_hash = "d9ecb5b3e513aae16c437ceb22acd5b78a6bbdc8"
+project_hash = "76a21b45cd2b5bd38666275fe69bb7927dabcfe4"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]
@@ -446,6 +461,12 @@ deps = ["Serialization", "Sockets"]
 git-tree-sha1 = "ea32b83ca4fefa1768dc84e504cc0a94fb1ab8d1"
 uuid = "f0e56b4a-5159-44fe-b623-3e5288b988bb"
 version = "2.4.2"
+
+[[deps.Conda]]
+deps = ["Downloads", "JSON", "VersionParsing"]
+git-tree-sha1 = "b19db3927f0db4151cb86d073689f2428e524576"
+uuid = "8f4d0f93-b110-5947-807f-2305c1781a2d"
+version = "1.10.2"
 
 [[deps.ConstructionBase]]
 git-tree-sha1 = "76219f1ed5771adbb096743bff43fb5fdd4c1157"
@@ -1439,6 +1460,12 @@ git-tree-sha1 = "8f6bc219586aef8baf0ff9a5fe16ee9c70cb65e4"
 uuid = "92933f4c-e287-5a05-a399-4b506db050ca"
 version = "1.10.2"
 
+[[deps.PyCall]]
+deps = ["Conda", "Dates", "Libdl", "LinearAlgebra", "MacroTools", "Serialization", "VersionParsing"]
+git-tree-sha1 = "9816a3826b0ebf49ab4926e2b18842ad8b5c8f04"
+uuid = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
+version = "1.96.4"
+
 [[deps.QOI]]
 deps = ["ColorTypes", "FileIO", "FixedPointNumbers"]
 git-tree-sha1 = "18e8f4d1426e965c7b532ddd260599e1510d26ce"
@@ -1800,6 +1827,11 @@ git-tree-sha1 = "e7f5b81c65eb858bed630fe006837b935518aca5"
 uuid = "3d5dd08c-fd9d-11e8-17fa-ed2836048c2f"
 version = "0.21.70"
 
+[[deps.VersionParsing]]
+git-tree-sha1 = "58d6e80b4ee071f5efd07fda82cb9fbe17200868"
+uuid = "81def892-9a0e-5fdd-b105-ffc91e053289"
+version = "1.3.0"
+
 [[deps.Wayland_jll]]
 deps = ["Artifacts", "EpollShim_jll", "Expat_jll", "JLLWrappers", "Libdl", "Libffi_jll", "Pkg", "XML2_jll"]
 git-tree-sha1 = "7558e29847e99bc3f04d6569e82d0f5c54460703"
@@ -2069,6 +2101,8 @@ version = "1.4.1+1"
 # ╠═c5f6cacc-fc77-4064-b9ce-cbc6b27e20c2
 # ╠═8839bc7b-440e-4709-baae-d77bdd649cc5
 # ╠═c0961946-ba71-4466-be98-2fcef9f280b7
+# ╠═d6a07f96-a47f-46eb-ab21-b1419b77af8a
+# ╠═2c526545-0db6-488f-b258-4a3e229afd9d
 # ╟─0ea80eac-30bb-42d0-8981-3b252b248094
 # ╠═c2142f87-445d-4ff2-993f-b3bcea81ac13
 # ╠═94450618-79f8-4b43-9e39-b33940577c1e

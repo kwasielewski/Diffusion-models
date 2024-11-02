@@ -7,9 +7,14 @@ using InteractiveUtils
 # ╔═╡ 1a77f641-8950-4afd-92aa-4647aea99d2e
 begin
 	using Images
-	Images.load("./Images/sd_example.jpg")
+	sd_ex = Images.load("./Images/sd_example.jpg")
 
-	Images.load("./Images/wurstchen_example.png")
+	wurst_ex = Images.load("./Images/wurstchen_example.png")
+	md"""
+	| Stable diffusion | Würstchen |
+	|:----:|:-------:|
+	|$sd_ex|$wurst_ex|
+	"""
 end
 
 # ╔═╡ 8ed4229f-9f93-42c8-a98b-e2ca308ddb59
@@ -74,14 +79,24 @@ md"# Markov chains"
 # ╔═╡ 611f2dfb-c00a-4209-9828-cf754c6628f0
 md"# Formula derivation"
 
+# ╔═╡ 0e829dba-f6a8-4220-9620-c8c553029bcf
+begin
+	training = Images.load("./Images/training.png")
+	md"""# Trainining 
+	$training
+	"""
+end
+
 # ╔═╡ 7f743687-8ea1-42f1-877d-95b323ec92cf
 md"# Demonstration"
 
-# ╔═╡ 5ecc0cf6-7fb0-4c3a-bc1c-71cb2feebce5
-
-
 # ╔═╡ 311ee76b-eb55-4ac8-b11e-e4aa4e7a535b
-md"# Image sampling"
+begin
+	sampling = Images.load("./Images/sampling.png")
+	md"""# Image sampling
+	$sampling
+	"""
+end
 
 # ╔═╡ 4088f00d-416f-4504-ab79-7c450a2b60a0
 begin
@@ -99,7 +114,7 @@ md"""
 # Cosine-Beta scheduling
 Schedule proposed by Improved DDPMs paper (citation needed) applies cosine function to prolong critical parts of noising process using the modified formula:
 
-$$f(t)=cos(π)$$
+$$ᾱ_t = \frac{f(t)}{f(0)},\ f(t) = \cos\left(\frac{t/T + s}{1+s} \cdot \frac{π}{2}\right)^2$$
 and here is the comparison
 
 $cosine
@@ -127,6 +142,10 @@ Why is an additional type of GANs needed for LDMs?
 $vqgan
 """
 end
+
+# ╔═╡ 619c3b5e-01b4-433a-9720-df1d9cb75c35
+md"""# Codebook trainning
+"""
 
 # ╔═╡ ff792787-0d6d-4da4-a200-c2ccff22cf3c
 md"""# Crossattention & conditioning
@@ -1337,13 +1356,14 @@ version = "17.4.0+2"
 # ╠═f6a9fca7-de96-491e-b83a-8de15faf11e0
 # ╟─08ccf4b4-8d9f-4735-84a7-c9684bf77a52
 # ╟─611f2dfb-c00a-4209-9828-cf754c6628f0
+# ╠═0e829dba-f6a8-4220-9620-c8c553029bcf
 # ╟─7f743687-8ea1-42f1-877d-95b323ec92cf
-# ╠═5ecc0cf6-7fb0-4c3a-bc1c-71cb2feebce5
-# ╟─311ee76b-eb55-4ac8-b11e-e4aa4e7a535b
+# ╠═311ee76b-eb55-4ac8-b11e-e4aa4e7a535b
 # ╟─4088f00d-416f-4504-ab79-7c450a2b60a0
 # ╠═29d1344f-3f0f-486d-b393-8f23be1309df
 # ╠═7ff1a724-6d8a-473c-8bb0-b440b6a70bcd
 # ╠═dc2335cc-99e5-4096-8d58-a320caac7936
+# ╠═619c3b5e-01b4-433a-9720-df1d9cb75c35
 # ╠═ff792787-0d6d-4da4-a200-c2ccff22cf3c
 # ╟─f60374b5-85ef-40a6-b38e-e9b441c231b1
 # ╟─7adc130d-f8e4-4dd5-b8c4-7ab3e91b932f

@@ -42,7 +42,7 @@ end
 
 # ╔═╡ 489c96b1-f27d-4fca-9326-c7eef93dd968
 md"""
-Denoising Diffusion Probabilistic Models
+[1] Jonathan Ho, Ajay Jain, Pieter Abbeel. 'Denoising Diffusion Probabilistic Models'. Proceedings of the 34th International Conference on Neural Information Processing Systems, 2020
 """
 
 # ╔═╡ 727eb3c8-f831-4a99-8ba1-5ddbb8789a43
@@ -178,7 +178,7 @@ begin
 end
 
 # ╔═╡ 5dc38e26-d688-448f-a636-79b9f691244d
-md"""[3] Olaf Ronneberger, Philipp Fischer, Thomas Brox 'U-Net: Convolutional Networks for Biomedical Image Segmentation', CoRR, 2015
+md"""[3] Olaf Ronneberger, Philipp Fischer, Thomas Brox. 'U-Net: Convolutional Networks for Biomedical Image Segmentation'. International Conference on Medical Image Computing and Computer-Assisted Intervention (MICCAI), 2015
 """
 
 # ╔═╡ fced2cca-94c9-475d-b107-8711fc44a4ce
@@ -199,13 +199,13 @@ atten3 = Images.load("./Images/selfatten3.png")
 md"""
 $wzor
 
-## How it works?
+# How it works?
 $atten1
 
-##
+#
 $atten2
 
-##
+#
 $atten3
 """
 end
@@ -241,7 +241,7 @@ end
 # ╔═╡ 29d1344f-3f0f-486d-b393-8f23be1309df
 md"""
 # Cosine-Beta scheduling
-Schedule proposed by Improved DDPMs paper (citation needed) applies cosine function to prolong critical parts of noising process using the modified formula:
+Schedule proposed by Improved DDPMs paper[4] applies cosine function to prolong critical parts of noising process using the modified formula:
 
 $$ᾱ_t = \frac{f(t)}{f(0)},\ f(t) = \cos\left(\frac{t/T + s}{1+s} \cdot \frac{π}{2}\right)^2$$
 and here is the comparison
@@ -249,6 +249,7 @@ and here is the comparison
 $cosine
 
 $linear
+[4] Alexander Quinn Nichol, Prafulla Dhariwal. 'Improved Denoising Diffusion Probabilistic Models'. Proceedings of the 38th International Conference on Machine Learning, PMLR, 2021.
 """
 
 # ╔═╡ 7ff1a724-6d8a-473c-8bb0-b440b6a70bcd
@@ -256,9 +257,11 @@ begin
 ldm = Images.load("./Images/ldm.png")
 md"""# Latent difussion models
 Until this part of presentation discussed models operated directly on pixel space.
-Paper "High-Resolution Image Synthesis with Latent Diffusion Models"[4] (2021) showed that it is possible to move the diffusion process to the latent space.
+Paper "High-Resolution Image Synthesis with Latent Diffusion Models"[5] showed that it is possible to move the diffusion process to the latent space.
 $ldm
 We will dissect crucial parts of the architecture that enable the latent space computation
+
+[5] R. Rombach, A. Blattmann, D. Lorenz, P. Esser, and B. Ommer. 'High-Resolution Image Synthesis with Latent Diffusion Models'. Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, 2022.
 """
 end
 
@@ -269,6 +272,9 @@ md"""# Vector quantized GANs
 Why is an additional type of GANs needed for LDMs?
 > Learning a latent space that is suitable for computation is tricky. That's why LDMs include VQGANs as part of the architecture
 $vqgan
+Vector quantization in GANs[6]
+
+[6] P. Esser, R. Rombach, and B. Ommer. 'Taming Transformers for High-Resolution Image Synthesis'. Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, 2021.
 """
 end
 
@@ -292,12 +298,14 @@ $ldm
 begin
 	wuerstchenarch = Images.load("./Images/wuerstchen-arch.png")
 md"""# Würstchen
-This model tries to improve LDM models. It was presented in 2023 in paper "Wuerstchen: An Efficient Architecture for Large-Scale Text-to-Image Diffusion Models"[5]. It improves image quality and shortens time of learning needed.
+This model tries to improve LDM models. It was presented in 2023 in paper "Wuerstchen: An Efficient Architecture for Large-Scale Text-to-Image Diffusion Models"[7]. It improves image quality and shortens time of learning needed.
 $wuerstchenarch
 How is this different to LDM?
 > We are adding another model which will let us uncompress pictures even more. This model is diffusion model which has to recreate picture given in conditioning. We will also give it description of picture to help it a little.
 
 > Model C which is responsible for image generation isn't U-Net becouse size of picture is so small that we don't need to scale it down.
+
+[7] Pablo Pernias, Dominic Rampas, Mats L. Richter, Christopher J. Pal, Marc Aubreville. 'Wuerstchen: An Efficient Architecture for Large-Scale Text-to-Image Diffusion Models'. The Twelfth International Conference on Learning Representations, 2024
 """ 
 end
 
@@ -318,9 +326,9 @@ md"""# Würstchen efficiency
 $wuerstchensamlingtime
 $wuerstchentraningtime
 
-One of the creators of this model is Dominic Rampas. He has a youtube chanell in which he explains diffusion models. If you want to learn more about diffusion models I encourage you to visit it. (https://www.youtube.com/@outliier/videos)
+One of the creators of this model is Dominic Rampas. He has a youtube chanel in which he explains diffusion models. If you want to learn more about diffusion models I encourage you to visit it. [link](https://www.youtube.com/@outliier/videos)
 
-(https://huggingface.co/blog/wuerstchen) - link skąd są obrazki
+[Hugginface page](https://huggingface.co/blog/wuerstchen)
 """
 end
 
@@ -340,20 +348,23 @@ begin
 	|:----:|:-------:|
 	|$ex_sd1|$ex_w1|
 
+	"""
+end
+
+# ╔═╡ b1296a31-b578-4ecd-90ed-ad7432b671b1
+	md"""# Examples
 	Prompt: cinematic shot of a woman crying on a rainy night, neon lights, in the background we can see the word UPHILL with red neon lights
 
 	| Stable diffusion | Würstchen |
 	|:----:|:-------:|
 	|$ex_sd2|$ex_w2|
-
+	# Examples
 	Prompt: "The Cosmic Mona Lisa",ultrafine detailed,Proud,Graffiti Street Art,F/2.8,dreamy,cosmic energy,4K,
 
 	| Stable diffusion | Würstchen |
 	|:----:|:-------:|
 	|$ex_sd3|$ex_w3|
-	
 	"""
-end
 
 # ╔═╡ 0b6724b5-e405-4774-97d9-39476c8022f5
 md"""# Technical sidenote: How to run this presentation locally? 
@@ -2277,6 +2288,7 @@ version = "1.4.1+1"
 # ╟─b6061139-23c9-4672-8820-8427869dca90
 # ╟─3bd97ffc-d8f9-4a24-9339-6a2e351be7a3
 # ╟─c870260b-8ce4-4a80-b26f-f60c03e6dcff
+# ╟─b1296a31-b578-4ecd-90ed-ad7432b671b1
 # ╟─0b6724b5-e405-4774-97d9-39476c8022f5
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

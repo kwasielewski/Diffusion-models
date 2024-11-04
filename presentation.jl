@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.3
+# v0.20.1
 
 using Markdown
 using InteractiveUtils
@@ -11,6 +11,10 @@ begin
 	using PlutoUI
 	using Plots
 	using PyCall
+end
+
+# ╔═╡ c7f3aa4c-be9a-46d2-b8d8-5e314e980f4f
+begin
 	diffusers = pyimport("diffusers")
 	nothing
 end
@@ -36,11 +40,16 @@ begin
 	"""
 end
 
+# ╔═╡ 489c96b1-f27d-4fca-9326-c7eef93dd968
+md"""
+Denoising Diffusion Probabilistic Models
+"""
+
 # ╔═╡ 727eb3c8-f831-4a99-8ba1-5ddbb8789a43
 md"# Diffusion processes"
 
 # ╔═╡ 6ca59299-152f-445f-a50f-370cb230fb50
-md"All models we will talk today are using diffusion proces. Diffusion models were introduced in 2015 [2] as a method to learn a model that can sample from a highly complex probability distribution. Later in DDPM paper diffusion is process of noising and denoising picture. We want to learn neural network to predict noise we add in specific time $t \in \set{0, 1000}$ to reverse noising process and get picture which represents something. (może coś dodać tu o p i q)"
+md"All models we will talk today are using diffusion proces. Diffusion models were introduced in 2015 [2] as a method to learn a model that can sample from a highly complex probability distribution. Later in DDPM paper diffusion is defined as a process of noising and denoising of a picture. Our obejective is to train a neural network to predict noise we add in specific time $t \in \set{0, 1000}$ to reverse noising process and get picture which represents something."
 
 # ╔═╡ 45422b88-7474-4aeb-8f69-6abfa34e528f
 md"### Example"
@@ -109,7 +118,7 @@ md" # Diffusion example"
 end
 
 # ╔═╡ 5607f623-a3a4-4e87-a997-447f625a7448
-md"# Diffusion example"
+md"# DDPM example"
 
 # ╔═╡ c13b2bd8-26fd-4986-9b07-d6e4e4d91a5b
 begin
@@ -138,19 +147,19 @@ $$\begin{align} q(x_t|x_{t-1}) & = \mathcal{N}(x_t, \sqrt{1-\beta_t}x_{t-1},\bet
 md"""# Derivation of formulas for DDPMs
 ### Loss function
 $$\begin{align}-\log(p_\theta) & \leq -\log(p_\theta) + D_{KL}(q(x_{t-1}|x_t,x_0)||p_\theta(x_{t-1}|x_t))\\
-& = -\log(p_\theta) + \log{\frac{q(x_{1:T}|x_0)}{p_\theta(x_{1:T}|x_0)}} \\
-& = -\log(p_\theta) + \log{\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}} + \log(p_\theta) \\
-& =\log{\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}} \end{align}$$
+& = -\log(p_\theta) + \log{\left(\frac{q(x_{1:T}|x_0)}{p_\theta(x_{1:T}|x_0)}\right)} \\
+& = -\log(p_\theta) + \log{\left(\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}\right)} + \log(p_\theta) \\
+& =\log{\left(\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}\right)} \end{align}$$
 This form should be enough to compute the loss, but there are more simplifications to be made.
 """
 
 # ╔═╡ 53808e68-6597-4207-8b5d-cffedd266da8
 md"""# Derivation of formulas for DDPMs
 ### Loss function
-$$\begin{align}\log{\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}} & = -\log(p(x_T)) + \sum_{t=1}^{T}\log(\frac{q(x_t|x_{t-1})}{p_\theta(x_{t-1}|x_t)}) \\
-& = -\log(p(x_T)) + \sum_{t=2}^{T}\log(\frac{q(x_t|x_{t-1})}{p_\theta(x_{t-1}|x_t)}) + \log(\frac{q(x_1|x_{0})}{p_\theta(x_{0}|x_1)}) \\
-& = -\log(p(x_T)) + \sum_{t=2}^{T}\log(\frac{q(x_t|x_{t-1}, x_0)q(x_t|x_0)}{p_\theta(x_{t-1}|x_t)q(x_{t-1}|x_0)}) + \log(\frac{q(x_1|x_{0})}{p_\theta(x_{0}|x_1)}) \\
-& = \log(\frac{q(x_T|x_0)}{p(x_T)}) + \sum_{t=2}^{T}\log(\frac{q(x_{t-1}|x_t, x_0)}{p_\theta(x_{t-1}|x_t)}) - \log(p_\theta(x_0|x_1)) \\
+$$\begin{align}\log{\left(\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}\right)} & = -\log(p(x_T)) + \sum_{t=1}^{T}\log{\left(\frac{q(x_t|x_{t-1})}{p_\theta(x_{t-1}|x_t)}\right)} \\
+& = -\log(p(x_T)) + \sum_{t=2}^{T}\log{\left(\frac{q(x_t|x_{t-1})}{p_\theta(x_{t-1}|x_t)}\right)} + \log{\left(\frac{q(x_1|x_{0})}{p_\theta(x_{0}|x_1)}\right)} \\
+& = -\log(p(x_T)) + \sum_{t=2}^{T}\log{\left(\frac{q(x_t|x_{t-1}, x_0)q(x_t|x_0)}{p_\theta(x_{t-1}|x_t)q(x_{t-1}|x_0)}\right)} + \log{\left(\frac{q(x_1|x_{0})}{p_\theta(x_{0}|x_1)}\right)} \\
+& = \log{\left(\frac{q(x_T|x_0)}{p(x_T)}\right)} + \sum_{t=2}^{T}\log{\left(\frac{q(x_{t-1}|x_t, x_0)}{p_\theta(x_{t-1}|x_t)}\right)} - \log(p_\theta(x_0|x_1)) \\
 & = D_{KL}(q(x_T|x_0)||p(x_T)) + \sum_{t=2}^{T}D_{KL}(q(x_{t-1}|x_t, x_0)||p_\theta(x_{t-1}|x_t)) \\& \text{ }\text{ }\text{ }- \log(p_\theta(x_0|x_1))
 \end{align}$$
 First term does not have any learnable parameters, so it can be ommited from loss calculations. Dissecting second term would further reveal that the intuition for predicting noise only is correct. For more details see this [blogpost](https://lilianweng.github.io/posts/2021-07-11-diffusion-models/) by Lilian Weng.
@@ -264,8 +273,13 @@ $vqgan
 end
 
 # ╔═╡ 619c3b5e-01b4-433a-9720-df1d9cb75c35
+begin
+codebook = Images.load("Images/codebook.png")
 md"""# Codebook trainning
+$codebook
+Vector quantization visulization from Lj Miranda's [blogpost](https://ljvmiranda921.github.io/notebook/2021/08/08/clip-vqgan/)
 """
+end
 
 # ╔═╡ ff792787-0d6d-4da4-a200-c2ccff22cf3c
 md"""# Crossattention & conditioning
@@ -340,6 +354,18 @@ begin
 	
 	"""
 end
+
+# ╔═╡ 0b6724b5-e405-4774-97d9-39476c8022f5
+md"""# Technical sidenote: How to run this presentation locally? 
+* Download Julia using `juliaup` for your distro
+* In Julia's repl run the following commands
+  * `using Pkg; Pkg.add("Pluto")` <- this downloads the notebook library
+  * `using Pluto; Pluto.run()` <- this starts the notebook in your browser
+* In your browser exit safe preview mode. Because this is probably your first time using Julia, the precompilation time of all libraries will take some time. Precompilation progress can be inspected in the `Status` tab.
+* If you want to use the Python components you have to install `diffusers` library in your system Python (or change PyCall's Python installation).
+  * To use the small mnist `1aurent/ddpm-mnist` model you need to download it manually (for unknown to us reason) and put it into the model cache directory mentioned in the first error message.
+* Presentation mode is hidden in the top right corner. To rerun selected cell press shift+enter
+"""
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -2207,9 +2233,11 @@ version = "1.4.1+1"
 
 # ╔═╡ Cell order:
 # ╟─8ed4229f-9f93-42c8-a98b-e2ca308ddb59
+# ╟─c7f3aa4c-be9a-46d2-b8d8-5e314e980f4f
 # ╟─7714b397-d308-472a-a921-f15fa6853cff
 # ╟─f11f7203-b17c-460b-b858-48575dc98ad4
-# ╠═1a77f641-8950-4afd-92aa-4647aea99d2e
+# ╟─1a77f641-8950-4afd-92aa-4647aea99d2e
+# ╟─489c96b1-f27d-4fca-9326-c7eef93dd968
 # ╟─727eb3c8-f831-4a99-8ba1-5ddbb8789a43
 # ╟─6ca59299-152f-445f-a50f-370cb230fb50
 # ╟─45422b88-7474-4aeb-8f69-6abfa34e528f
@@ -2236,18 +2264,19 @@ version = "1.4.1+1"
 # ╟─fced2cca-94c9-475d-b107-8711fc44a4ce
 # ╟─a593e359-6291-437c-9527-ae7066941f8f
 # ╟─02a410f0-db83-404d-857b-75db04c57dc2
-# ╠═f6a9fca7-de96-491e-b83a-8de15faf11e0
+# ╟─f6a9fca7-de96-491e-b83a-8de15faf11e0
 # ╟─0e829dba-f6a8-4220-9620-c8c553029bcf
 # ╟─311ee76b-eb55-4ac8-b11e-e4aa4e7a535b
 # ╟─4088f00d-416f-4504-ab79-7c450a2b60a0
 # ╟─29d1344f-3f0f-486d-b393-8f23be1309df
-# ╠═7ff1a724-6d8a-473c-8bb0-b440b6a70bcd
+# ╟─7ff1a724-6d8a-473c-8bb0-b440b6a70bcd
 # ╟─dc2335cc-99e5-4096-8d58-a320caac7936
-# ╠═619c3b5e-01b4-433a-9720-df1d9cb75c35
-# ╠═ff792787-0d6d-4da4-a200-c2ccff22cf3c
-# ╠═7adc130d-f8e4-4dd5-b8c4-7ab3e91b932f
-# ╠═b6061139-23c9-4672-8820-8427869dca90
-# ╠═3bd97ffc-d8f9-4a24-9339-6a2e351be7a3
-# ╠═c870260b-8ce4-4a80-b26f-f60c03e6dcff
+# ╟─619c3b5e-01b4-433a-9720-df1d9cb75c35
+# ╟─ff792787-0d6d-4da4-a200-c2ccff22cf3c
+# ╟─7adc130d-f8e4-4dd5-b8c4-7ab3e91b932f
+# ╟─b6061139-23c9-4672-8820-8427869dca90
+# ╟─3bd97ffc-d8f9-4a24-9339-6a2e351be7a3
+# ╟─c870260b-8ce4-4a80-b26f-f60c03e6dcff
+# ╟─0b6724b5-e405-4774-97d9-39476c8022f5
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

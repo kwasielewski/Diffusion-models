@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.1
+# v0.20.3
 
 using Markdown
 using InteractiveUtils
@@ -183,8 +183,22 @@ md"It's used to learn how every pixel coresponds to every other pixel in our pic
 
 # ╔═╡ f6a9fca7-de96-491e-b83a-8de15faf11e0
 begin
-	Images.load("./Images/attention.png")
-	# Where it is from???
+wzor = Images.load("./Images/wzor.png")
+atten1 = Images.load("./Images/selfatten1.png")
+atten2 = Images.load("./Images/selfatten2.png")
+atten3 = Images.load("./Images/selfatten3.png")
+md"""
+$wzor
+
+## How it works?
+$atten1
+
+##
+$atten2
+
+##
+$atten3
+"""
 end
 
 # ╔═╡ 0e829dba-f6a8-4220-9620-c8c553029bcf
@@ -233,7 +247,7 @@ begin
 ldm = Images.load("./Images/ldm.png")
 md"""# Latent difussion models
 Until this part of presentation discussed models operated directly on pixel space.
-Paper <name> showed that it is possible to move the diffusion process to the latent space.
+Paper "High-Resolution Image Synthesis with Latent Diffusion Models"[4] (2021) showed that it is possible to move the diffusion process to the latent space.
 $ldm
 We will dissect crucial parts of the architecture that enable the latent space computation
 """
@@ -260,14 +274,16 @@ How is it possible to get the LDM to generate a specific kind of image?
 $ldm
 """
 
-# ╔═╡ f60374b5-85ef-40a6-b38e-e9b441c231b1
-md"# Demonstration"
-
 # ╔═╡ 7adc130d-f8e4-4dd5-b8c4-7ab3e91b932f
 begin
 	wuerstchenarch = Images.load("./Images/wuerstchen-arch.png")
 md"""# Würstchen
-  	$wuerstchenarch
+This model tries to improve LDM models. It was presented in 2023 in paper "Wuerstchen: An Efficient Architecture for Large-Scale Text-to-Image Diffusion Models"[5]. It improves image quality and shortens time of learning needed.
+$wuerstchenarch
+How is this different to LDM?
+> We are adding another model which will let us uncompress pictures even more. This model is diffusion model which has to recreate picture given in conditioning. We will also give it description of picture to help it a little.
+
+> Model C which is responsible for image generation isn't U-Net becouse size of picture is so small that we don't need to scale it down.
 """ 
 end
 
@@ -276,7 +292,53 @@ begin
 wuerstchentrain = Images.load("./Images/wuerstchen-train.png")
 md"""# Würstchen training
 $wuerstchentrain
+If we analize this we can see that after we learn A, models B and C can be trained in parallel. In result we can train this model much faster then LDM because pictures we will sample are much smaller which results in traing time and sampling time.
 """
+end
+
+# ╔═╡ 3bd97ffc-d8f9-4a24-9339-6a2e351be7a3
+begin
+wuerstchensamlingtime = Images.load("./Images/time_wuerstchen.jpg")
+wuerstchentraningtime = Images.load("./Images/training_time_wuerstchen.jpg")
+md"""# Würstchen efficiency 
+$wuerstchensamlingtime
+$wuerstchentraningtime
+
+One of the creators of this model is Dominic Rampas. He has a youtube chanell in which he explains diffusion models. If you want to learn more about diffusion models I encourage you to visit it. (https://www.youtube.com/@outliier/videos)
+
+(https://huggingface.co/blog/wuerstchen) - link skąd są obrazki
+"""
+end
+
+# ╔═╡ c870260b-8ce4-4a80-b26f-f60c03e6dcff
+begin
+	ex_sd1 = Images.load("./Images/example_sd1.jpg")
+	ex_sd2 = Images.load("./Images/example_sd2.jpg")
+	ex_sd3 = Images.load("./Images/example_sd3.jpg")
+	ex_w1 = Images.load("./Images/example_w1.jpg")
+	ex_w2 = Images.load("./Images/example_w2.jpg")
+	ex_w3 = Images.load("./Images/example_w3.jpg")
+	md"""
+	# Examples
+	Prompt: "a beautiful hummingbird flying with the text \"Japanese Stable LM 2\" below it, with a lofi anime landscape of Mount Fuji forming the outline of the text \"Japanese Stable LM 2\" style anime"
+	
+	| Stable diffusion | Würstchen |
+	|:----:|:-------:|
+	|$ex_sd1|$ex_w1|
+
+	Prompt: cinematic shot of a woman crying on a rainy night, neon lights, in the background we can see the word UPHILL with red neon lights
+
+	| Stable diffusion | Würstchen |
+	|:----:|:-------:|
+	|$ex_sd2|$ex_w2|
+
+	Prompt: "The Cosmic Mona Lisa",ultrafine detailed,Proud,Graffiti Street Art,F/2.8,dreamy,cosmic energy,4K,
+
+	| Stable diffusion | Würstchen |
+	|:----:|:-------:|
+	|$ex_sd3|$ex_w3|
+	
+	"""
 end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -2147,7 +2209,7 @@ version = "1.4.1+1"
 # ╟─8ed4229f-9f93-42c8-a98b-e2ca308ddb59
 # ╟─7714b397-d308-472a-a921-f15fa6853cff
 # ╟─f11f7203-b17c-460b-b858-48575dc98ad4
-# ╟─1a77f641-8950-4afd-92aa-4647aea99d2e
+# ╠═1a77f641-8950-4afd-92aa-4647aea99d2e
 # ╟─727eb3c8-f831-4a99-8ba1-5ddbb8789a43
 # ╟─6ca59299-152f-445f-a50f-370cb230fb50
 # ╟─45422b88-7474-4aeb-8f69-6abfa34e528f
@@ -2174,17 +2236,18 @@ version = "1.4.1+1"
 # ╟─fced2cca-94c9-475d-b107-8711fc44a4ce
 # ╟─a593e359-6291-437c-9527-ae7066941f8f
 # ╟─02a410f0-db83-404d-857b-75db04c57dc2
-# ╟─f6a9fca7-de96-491e-b83a-8de15faf11e0
+# ╠═f6a9fca7-de96-491e-b83a-8de15faf11e0
 # ╟─0e829dba-f6a8-4220-9620-c8c553029bcf
 # ╟─311ee76b-eb55-4ac8-b11e-e4aa4e7a535b
 # ╟─4088f00d-416f-4504-ab79-7c450a2b60a0
 # ╟─29d1344f-3f0f-486d-b393-8f23be1309df
-# ╟─7ff1a724-6d8a-473c-8bb0-b440b6a70bcd
+# ╠═7ff1a724-6d8a-473c-8bb0-b440b6a70bcd
 # ╟─dc2335cc-99e5-4096-8d58-a320caac7936
 # ╠═619c3b5e-01b4-433a-9720-df1d9cb75c35
-# ╟─ff792787-0d6d-4da4-a200-c2ccff22cf3c
-# ╟─f60374b5-85ef-40a6-b38e-e9b441c231b1
-# ╟─7adc130d-f8e4-4dd5-b8c4-7ab3e91b932f
-# ╟─b6061139-23c9-4672-8820-8427869dca90
+# ╠═ff792787-0d6d-4da4-a200-c2ccff22cf3c
+# ╠═7adc130d-f8e4-4dd5-b8c4-7ab3e91b932f
+# ╠═b6061139-23c9-4672-8820-8427869dca90
+# ╠═3bd97ffc-d8f9-4a24-9339-6a2e351be7a3
+# ╠═c870260b-8ce4-4a80-b26f-f60c03e6dcff
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

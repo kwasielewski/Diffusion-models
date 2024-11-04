@@ -49,7 +49,7 @@ md"""
 md"# Diffusion processes"
 
 # ╔═╡ 6ca59299-152f-445f-a50f-370cb230fb50
-md"All models we will talk today are using diffusion proces. Diffusion models were introduced in 2015 [2] as a method to learn a model that can sample from a highly complex probability distribution. Later in DDPM paper diffusion is defined as a process of noising and denoising of a picture. Our obejective is to train a neural network to predict noise we add in specific time $t \in \set{0, 1000}$ to reverse noising process and get picture which represents something."
+md"All models we will talk today about are using diffusion processes. Diffusion models were introduced in 2015 [2] as a method to learn a model that can sample from a highly complex probability distribution. Later in DDPM paper diffusion is defined as a process of noising and denoising of a picture. Our objective is to train a neural network to predict noise, that we add in specific time $t \in \set{0,\dots, 1000}$, to reverse the noising process and get picture which represents something meaningful."
 
 # ╔═╡ 45422b88-7474-4aeb-8f69-6abfa34e528f
 md"### Example"
@@ -169,7 +169,7 @@ First term does not have any learnable parameters, so it can be ommited from los
 md"# Architecture"
 
 # ╔═╡ c2142f87-445d-4ff2-993f-b3bcea81ac13
-md"This architecture is called U-Net[3], it was used in image segmentation but it also found its place in diffusion models for noise prediction. Diffusion models also added self-attention layers which aren't present in this picture but we will explain them in a minute and time embeddings which will condition our model based on 't'"
+md"Core of DDPMs' architecture is called U-Net[3]. It was used in image segmentation but it also found its place in diffusion models for noise prediction. Diffusion models also added self-attention layers which aren't present in this picture, but we will explain them in a minute, and time embeddings which will condition our model based on 't'"
 
 # ╔═╡ 94450618-79f8-4b43-9e39-b33940577c1e
 begin
@@ -269,7 +269,7 @@ end
 begin
 vqgan = Images.load("./Images/vqgan.png")
 md"""# Vector quantized GANs
-Why is an additional type of GANs needed for LDMs?
+Why are modified GANs needed for LDMs?
 > Learning a latent space that is suitable for computation is tricky. That's why LDMs include VQGANs as part of the architecture
 $vqgan
 Vector quantization in GANs[6]
@@ -301,9 +301,9 @@ md"""# Würstchen
 This model tries to improve LDM models. It was presented in 2023 in paper "Wuerstchen: An Efficient Architecture for Large-Scale Text-to-Image Diffusion Models"[7]. It improves image quality and shortens time of learning needed.
 $wuerstchenarch
 How is this different to LDM?
-> We are adding another model which will let us uncompress pictures even more. This model is diffusion model which has to recreate picture given in conditioning. We will also give it description of picture to help it a little.
+> We are adding another model which will let us compress and uncompress pictures even more. This model is diffusion based, which is trained to recreate picture provided in conditioning. We will also suppy it with the description of the picture to help it a little.
 
-> Model C which is responsible for image generation isn't U-Net becouse size of picture is so small that we don't need to scale it down.
+> Model C, which is responsible for image generation, isn't U-Net because size of picture is so small that we no longer need to scale it down.
 
 [7] Pablo Pernias, Dominic Rampas, Mats L. Richter, Christopher J. Pal, Marc Aubreville. 'Wuerstchen: An Efficient Architecture for Large-Scale Text-to-Image Diffusion Models'. The Twelfth International Conference on Learning Representations, 2024
 """ 
@@ -314,7 +314,7 @@ begin
 wuerstchentrain = Images.load("./Images/wuerstchen-train.png")
 md"""# Würstchen training
 $wuerstchentrain
-If we analize this we can see that after we learn A, models B and C can be trained in parallel. In result we can train this model much faster then LDM because pictures we will sample are much smaller which results in traing time and sampling time.
+We can see that after we learn model A, models B and C can be trained in parallel. As a result we can train this model much faster then LDM, because pictures sampled pictures are much smaller, which lead to a reduction both in training and sampling time.
 """
 end
 
@@ -326,7 +326,7 @@ md"""# Würstchen efficiency
 $wuerstchensamlingtime
 $wuerstchentraningtime
 
-One of the creators of this model is Dominic Rampas. He has a youtube chanel in which he explains diffusion models. If you want to learn more about diffusion models I encourage you to visit it. [link](https://www.youtube.com/@outliier/videos)
+One of the creators of this model is Dominic Rampas. His Youtube channel is an amazing source of ML knowledge. If you want to learn more about diffusion models we encourage you to visit it. [link](https://www.youtube.com/@outliier/videos)
 
 [Hugginface page](https://huggingface.co/blog/wuerstchen)
 """

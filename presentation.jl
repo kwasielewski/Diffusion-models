@@ -7,12 +7,12 @@ using InteractiveUtils
 # ╔═╡ 8ed4229f-9f93-42c8-a98b-e2ca308ddb59
 begin
 	#startup code
-	#using HypertextLiteral
 	using Images
 	using PlutoUI
 	using Plots
 	using PyCall
 	diffusers = pyimport("diffusers")
+	nothing
 end
 
 # ╔═╡ 7714b397-d308-472a-a921-f15fa6853cff
@@ -61,21 +61,23 @@ md"# Diffusion example"
 
 # ╔═╡ c5f6cacc-fc77-4064-b9ce-cbc6b27e20c2
 begin
-# Parameters
-T = 1000                    # Total number of time steps
-β_start = 1e-4              # Starting beta value
-β_end = 0.02                # Ending beta value
-β = LinRange(β_start, β_end, T)  # Linear schedule for β
+
+T = 1000                    	# Total number of time steps
+β_start = 1e-4              	
+β_end = 0.02                	
+β = LinRange(β_start, β_end, T) # Linear schedule for β
 
 # Precompute the alpha values and their cumulative product
-α = 1 .- β                    # Alpha for each timestep
-α̅ = cumprod(α)                # Cumulative product of α, used in sampling
+α = 1 .- β                    	# Alpha for each timestep
+α̅ = cumprod(α)                	# Cumulative product of α, used in sampling
+
 function add_noise(x_0, t::Int)
-    α̅_t = α̅[t]             # Get α̅_t for time step t
-    noise = randn(size(x_0)) # Gaussian noise
+    α̅_t = α̅[t]             		# Get α̅_t for time step t
+    noise = randn(size(x_0)) 	# Gaussian noise
     noisy_image = sqrt(α̅_t) * x_0 + sqrt(1 - α̅_t) * noise
     return noisy_image
 end
+	
 function progressive_noising(x_0, T::Int)
     noisy_images = Vector{Array{Gray, 2}}(undef, T)
     
@@ -85,7 +87,11 @@ function progressive_noising(x_0, T::Int)
     
     return noisy_images
 end
+
 end
+
+# ╔═╡ d69c12e5-9142-4508-93e6-93c89dab53a8
+md"# Diffusion example"
 
 # ╔═╡ 8839bc7b-440e-4709-baae-d77bdd649cc5
 begin
@@ -94,23 +100,27 @@ begin
 	grayscale_imgs = map(x -> Gray.(x), noisy_images)
 end
 
+# ╔═╡ f3ee1fc1-d5da-49e7-b5a9-4b7af768c326
+md" # Diffusion example"
+
 # ╔═╡ c0961946-ba71-4466-be98-2fcef9f280b7
 @gif for i in 1:T
 	plot(grayscale_imgs[i],  cbar = false, framestyle = :none)
 end
 
+# ╔═╡ 5607f623-a3a4-4e87-a997-447f625a7448
+md"# Diffusion example"
+
 # ╔═╡ c13b2bd8-26fd-4986-9b07-d6e4e4d91a5b
 begin
 	pipeline = diffusers.DDPMPipeline
-	pipeline = pipeline.from_pretrained("1aurent/ddpm-mnist") #manually download model
+	pipeline = pipeline.from_pretrained("1aurent/ddpm-mnist") 
+	# manually download model and put it in the directory pointed by the errors
 end
 
 # ╔═╡ d6a07f96-a47f-46eb-ab21-b1419b77af8a
 # ╠═╡ show_logs = false
-begin
-	image = pipeline()["images"][1]
-	image
-end
+image = pipeline()["images"][1]
 
 # ╔═╡ 2c526545-0db6-488f-b258-4a3e229afd9d
 image.resize((256, 256))
@@ -180,13 +190,10 @@ end
 # ╔═╡ 0e829dba-f6a8-4220-9620-c8c553029bcf
 begin
 	training = Images.load("./Images/training.png")
-	md"""# Trainining 
+	md"""# DDPM trainining 
 	$training
 	"""
 end
-
-# ╔═╡ 7f743687-8ea1-42f1-877d-95b323ec92cf
-md"# Demonstration"
 
 # ╔═╡ 311ee76b-eb55-4ac8-b11e-e4aa4e7a535b
 begin
@@ -2137,45 +2144,47 @@ version = "1.4.1+1"
 """
 
 # ╔═╡ Cell order:
-# ╠═8ed4229f-9f93-42c8-a98b-e2ca308ddb59
+# ╟─8ed4229f-9f93-42c8-a98b-e2ca308ddb59
 # ╟─7714b397-d308-472a-a921-f15fa6853cff
-# ╠═f11f7203-b17c-460b-b858-48575dc98ad4
-# ╠═1a77f641-8950-4afd-92aa-4647aea99d2e
+# ╟─f11f7203-b17c-460b-b858-48575dc98ad4
+# ╟─1a77f641-8950-4afd-92aa-4647aea99d2e
 # ╟─727eb3c8-f831-4a99-8ba1-5ddbb8789a43
-# ╠═6ca59299-152f-445f-a50f-370cb230fb50
+# ╟─6ca59299-152f-445f-a50f-370cb230fb50
 # ╟─45422b88-7474-4aeb-8f69-6abfa34e528f
 # ╟─0ab3b4a0-c328-49bb-b8e1-73728f89d96c
 # ╟─10d15769-818e-4b53-858e-8a34ffc813ff
-# ╠═4e09ea6c-358c-4104-8ab5-d7e74808af3d
-# ╠═e93aa232-d336-4308-97a5-46b754dde31e
+# ╟─4e09ea6c-358c-4104-8ab5-d7e74808af3d
+# ╟─e93aa232-d336-4308-97a5-46b754dde31e
 # ╠═c5f6cacc-fc77-4064-b9ce-cbc6b27e20c2
-# ╠═8839bc7b-440e-4709-baae-d77bdd649cc5
-# ╠═c0961946-ba71-4466-be98-2fcef9f280b7
+# ╟─d69c12e5-9142-4508-93e6-93c89dab53a8
+# ╟─8839bc7b-440e-4709-baae-d77bdd649cc5
+# ╟─f3ee1fc1-d5da-49e7-b5a9-4b7af768c326
+# ╟─c0961946-ba71-4466-be98-2fcef9f280b7
+# ╟─5607f623-a3a4-4e87-a997-447f625a7448
 # ╠═c13b2bd8-26fd-4986-9b07-d6e4e4d91a5b
-# ╠═d6a07f96-a47f-46eb-ab21-b1419b77af8a
-# ╠═2c526545-0db6-488f-b258-4a3e229afd9d
-# ╠═63863c61-caca-4f82-a805-6d84ba6ac310
-# ╠═3423aa63-a95a-43dc-9c5d-8fc07f30dfa4
-# ╠═53808e68-6597-4207-8b5d-cffedd266da8
+# ╟─d6a07f96-a47f-46eb-ab21-b1419b77af8a
+# ╟─2c526545-0db6-488f-b258-4a3e229afd9d
+# ╟─63863c61-caca-4f82-a805-6d84ba6ac310
+# ╟─3423aa63-a95a-43dc-9c5d-8fc07f30dfa4
+# ╟─53808e68-6597-4207-8b5d-cffedd266da8
 # ╟─0ea80eac-30bb-42d0-8981-3b252b248094
-# ╠═c2142f87-445d-4ff2-993f-b3bcea81ac13
-# ╠═94450618-79f8-4b43-9e39-b33940577c1e
-# ╠═5dc38e26-d688-448f-a636-79b9f691244d
+# ╟─c2142f87-445d-4ff2-993f-b3bcea81ac13
+# ╟─94450618-79f8-4b43-9e39-b33940577c1e
+# ╟─5dc38e26-d688-448f-a636-79b9f691244d
 # ╟─fced2cca-94c9-475d-b107-8711fc44a4ce
-# ╠═a593e359-6291-437c-9527-ae7066941f8f
-# ╠═02a410f0-db83-404d-857b-75db04c57dc2
-# ╠═f6a9fca7-de96-491e-b83a-8de15faf11e0
-# ╠═0e829dba-f6a8-4220-9620-c8c553029bcf
-# ╟─7f743687-8ea1-42f1-877d-95b323ec92cf
-# ╠═311ee76b-eb55-4ac8-b11e-e4aa4e7a535b
+# ╟─a593e359-6291-437c-9527-ae7066941f8f
+# ╟─02a410f0-db83-404d-857b-75db04c57dc2
+# ╟─f6a9fca7-de96-491e-b83a-8de15faf11e0
+# ╟─0e829dba-f6a8-4220-9620-c8c553029bcf
+# ╟─311ee76b-eb55-4ac8-b11e-e4aa4e7a535b
 # ╟─4088f00d-416f-4504-ab79-7c450a2b60a0
-# ╠═29d1344f-3f0f-486d-b393-8f23be1309df
-# ╠═7ff1a724-6d8a-473c-8bb0-b440b6a70bcd
-# ╠═dc2335cc-99e5-4096-8d58-a320caac7936
+# ╟─29d1344f-3f0f-486d-b393-8f23be1309df
+# ╟─7ff1a724-6d8a-473c-8bb0-b440b6a70bcd
+# ╟─dc2335cc-99e5-4096-8d58-a320caac7936
 # ╠═619c3b5e-01b4-433a-9720-df1d9cb75c35
-# ╠═ff792787-0d6d-4da4-a200-c2ccff22cf3c
+# ╟─ff792787-0d6d-4da4-a200-c2ccff22cf3c
 # ╟─f60374b5-85ef-40a6-b38e-e9b441c231b1
-# ╠═7adc130d-f8e4-4dd5-b8c4-7ab3e91b932f
-# ╠═b6061139-23c9-4672-8820-8427869dca90
+# ╟─7adc130d-f8e4-4dd5-b8c4-7ab3e91b932f
+# ╟─b6061139-23c9-4672-8820-8427869dca90
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
